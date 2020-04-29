@@ -44,15 +44,17 @@ export default class PathfindingVisualizer extends Component {
   }
 
   getInitialGrid() {
-    const isMobile = window.innerWidth < 480;
-    const max_rows = isMobile ? 15 : 17;
-    const max_cols = isMobile ? 14 : 58;
+    const width = window.innerWidth,
+      height = window.innerHeight;
+    // console.log(height);
+    // console.log(width);
+    // const max_rows = isMobile ? 15 : 17;
+    // const max_cols = isMobile ? 14 : 58;
+    const max_cols = Math.round((width - 100) / 25);
+    const max_rows = Math.round((height - 300) / 25);
+    console.log(max_rows);
+    console.log(max_cols);
     const grid = [];
-    //console.log(grid);
-    // const divarr = document.getElementsByClassName('grid');
-    // for (let i = 0; i < divarr.length; i++) {
-    //   divarr[i].style.backgroundColor = "white";
-    // }
     for (let row = 0; row < max_rows; row++) {
       const currentRow = [];
       for (let col = 0; col < max_cols; col++) {
