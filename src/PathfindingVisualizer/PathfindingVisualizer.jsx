@@ -4,15 +4,6 @@ import { dijkstra, getNodesInShortestPathOrder } from '../algorithms/dijkstra';
 import { Navbar, Nav, Button } from 'react-bootstrap';
 import './PathfindingVisualizer.css';
 
-const START_NODE_ROW = 9;
-const START_NODE_ROW_MOBILE = 7;
-const START_NODE_COL = 14;
-const START_NODE_COL_MOBILE = 2;
-const FINISH_NODE_ROW = 9;
-const FINISH_NODE_ROW_MOBILE = 7;
-const FINISH_NODE_COL = 43;
-const FINISH_NODE_COL_MOBILE = 11;
-
 export default class PathfindingVisualizer extends Component {
   constructor() {
     super();
@@ -46,14 +37,8 @@ export default class PathfindingVisualizer extends Component {
   getInitialGrid() {
     const width = window.innerWidth,
       height = window.innerHeight;
-    console.log(height);
-    console.log(width);
-    // const max_rows = isMobile ? 15 : 17;
-    // const max_cols = isMobile ? 14 : 58;
-    const max_cols = Math.round((width - 100) / 25);
-    const max_rows = Math.round((height - 300) / 25);
-    console.log(max_rows);
-    console.log(max_cols);
+    const max_cols = Math.round((width - 100) / 27);
+    const max_rows = Math.round((height - 300) / 27);
     const grid = [];
     for (let row = 0; row < max_rows; row++) {
       const currentRow = [];
@@ -114,11 +99,14 @@ export default class PathfindingVisualizer extends Component {
     const { grid } = this.state;
     document.getElementById('msg').innerHTML = "<b>Dijkstra's Algorithm</b> guarantees shortest path";
     document.getElementById('da').setAttribute("disabled", "disabled");
-    const isMobile = window.innerWidth < 480;
-    const snr = isMobile ? START_NODE_ROW_MOBILE : START_NODE_ROW;
-    const snc = isMobile ? START_NODE_COL_MOBILE : START_NODE_COL;
-    const fnr = isMobile ? FINISH_NODE_ROW_MOBILE : FINISH_NODE_ROW;
-    const fnc = isMobile ? FINISH_NODE_COL_MOBILE : FINISH_NODE_COL
+    const width = window.innerWidth,
+      height = window.innerHeight;
+    const max_cols = Math.round((width - 100) / 27);
+    const max_rows = Math.round((height - 300) / 27);
+    const snr = Math.round(max_rows / 2);
+    const fnr = snr;
+    const snc = Math.round(max_cols / 4);
+    const fnc = Math.round(snc * 3);
     const startNode = grid[snr][snc];
     const finishNode = grid[fnr][fnc];
     const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
@@ -128,9 +116,6 @@ export default class PathfindingVisualizer extends Component {
 
   render() {
     const { grid, mouseIsPressed } = this.state;
-    // var webFrame = window.require('electron').webFrame
-    // webFrame.setVisualZoomLevelLimits(1, 1)
-    // webFrame.setLayoutZoomLevelLimits(0, 0)
     return (
       <>
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -277,11 +262,15 @@ export default class PathfindingVisualizer extends Component {
 
 
 const createNode = (col, row) => {
-  const isMobile = window.innerWidth < 480;
-  const snr = isMobile ? START_NODE_ROW_MOBILE : START_NODE_ROW;
-  const snc = isMobile ? START_NODE_COL_MOBILE : START_NODE_COL;
-  const fnr = isMobile ? FINISH_NODE_ROW_MOBILE : FINISH_NODE_ROW;
-  const fnc = isMobile ? FINISH_NODE_COL_MOBILE : FINISH_NODE_COL;
+
+  const width = window.innerWidth,
+    height = window.innerHeight;
+  const max_cols = Math.round((width - 100) / 27);
+  const max_rows = Math.round((height - 300) / 27);
+  const snr = Math.round(max_rows / 2);
+  const fnr = snr;
+  const snc = Math.round(max_cols / 4);
+  const fnc = Math.round(snc * 3);
   return {
     col,
     row,
