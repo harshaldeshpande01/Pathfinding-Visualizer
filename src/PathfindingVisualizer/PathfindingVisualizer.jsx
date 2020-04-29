@@ -46,8 +46,8 @@ export default class PathfindingVisualizer extends Component {
   getInitialGrid() {
     const width = window.innerWidth,
       height = window.innerHeight;
-    // console.log(height);
-    // console.log(width);
+    console.log(height);
+    console.log(width);
     // const max_rows = isMobile ? 15 : 17;
     // const max_cols = isMobile ? 14 : 58;
     const max_cols = Math.round((width - 100) / 25);
