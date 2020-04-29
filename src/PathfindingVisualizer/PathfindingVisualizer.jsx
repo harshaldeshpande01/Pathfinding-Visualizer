@@ -68,10 +68,6 @@ export default class PathfindingVisualizer extends Component {
   }
 
   animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder) {
-    if (nodesInShortestPathOrder.length === 1) {
-      document.getElementById('msg').innerHTML = "<b>No path found Reset</b> grid and try again ";
-      return;
-    }
     for (let i = 1; i <= visitedNodesInOrder.length; i++) {
       if (i === visitedNodesInOrder.length) {
         setTimeout(() => {
@@ -94,7 +90,13 @@ export default class PathfindingVisualizer extends Component {
           'node node-shortest-path';
       }, 50 * i);
       setTimeout(() => {
-        document.getElementById('msg').innerHTML = "Use <b>Reset grid</b> button and visualize again";
+        const message = document.getElementById('msg');
+        if (nodesInShortestPathOrder.length === 1) {
+          message.style.color = "red";
+          message.innerHTML = "<b>No path found Reset</b> grid and try again ";
+          return;
+        }
+        message.innerHTML = "Use <b>Reset grid</b> button and visualize again";
       }, 100 * nodesInShortestPathOrder.length);
     }
   }
