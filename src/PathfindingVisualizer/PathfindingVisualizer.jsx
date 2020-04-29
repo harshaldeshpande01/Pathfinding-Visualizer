@@ -96,9 +96,7 @@ export default class PathfindingVisualizer extends Component {
     const fnr = snr;
     const snc = Math.round(max_cols / 4);
     const fnc = Math.round(snc * 3);
-    if (fnc === max_cols - 1) {
-      fnc -= 1;
-    }
+    fnc--;
     const startNode = grid[snr][snc];
     const finishNode = grid[fnr][fnc];
     const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
@@ -263,9 +261,7 @@ const createNode = (col, row) => {
   const fnr = snr;
   const snc = Math.round(max_cols / 4);
   const fnc = Math.round(snc * 3);
-  if (fnc === max_cols - 1) {
-    fnc -= 1;
-  }
+  fnc--;
   return {
     col,
     row,
