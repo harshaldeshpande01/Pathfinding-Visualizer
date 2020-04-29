@@ -10,28 +10,11 @@ export default class PathfindingVisualizer extends Component {
     this.state = {
       grid: [],
       mouseIsPressed: false,
-      width: 800,
-      height: 182,
     };
-  }
-
-  updateDimensions() {
-    if (window.innerWidth < 480) {
-      this.setState({ width: 450, height: 102 });
-      window.location.reload(false)
-    } else {
-      let update_width = window.innerWidth - 100;
-      let update_height = Math.round(update_width / 4.4);
-      this.setState({ width: update_width, height: update_height });
-    }
   }
 
   componentDidMount() {
     this.getInitialGrid();
-    window.addEventListener("resize", this.updateDimensions.bind(this))
-  }
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.updateDimensions.bind(this));
   }
 
   getInitialGrid() {
