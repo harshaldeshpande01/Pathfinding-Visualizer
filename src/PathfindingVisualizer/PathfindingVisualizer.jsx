@@ -38,7 +38,7 @@ export default class PathfindingVisualizer extends Component {
     const width = window.innerWidth,
       height = window.innerHeight;
     const max_cols = Math.round((width - 100) / 27);
-    const max_rows = Math.round((height - 300) / 27);
+    const max_rows = Math.round((height - 300) / 25);
     const grid = [];
     for (let row = 0; row < max_rows; row++) {
       const currentRow = [];
@@ -68,6 +68,10 @@ export default class PathfindingVisualizer extends Component {
   }
 
   animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder) {
+    if (nodesInShortestPathOrder.length === 1) {
+      document.getElementById('msg').innerHTML = "<b>No path found Reset</b> grid and try again ";
+      return;
+    }
     for (let i = 1; i <= visitedNodesInOrder.length; i++) {
       if (i === visitedNodesInOrder.length) {
         setTimeout(() => {
@@ -102,7 +106,7 @@ export default class PathfindingVisualizer extends Component {
     const width = window.innerWidth,
       height = window.innerHeight;
     const max_cols = Math.round((width - 100) / 27);
-    const max_rows = Math.round((height - 300) / 27);
+    const max_rows = Math.round((height - 300) / 25);
     const snr = Math.round(max_rows / 2);
     const fnr = snr;
     const snc = Math.round(max_cols / 4);
@@ -266,7 +270,7 @@ const createNode = (col, row) => {
   const width = window.innerWidth,
     height = window.innerHeight;
   const max_cols = Math.round((width - 100) / 27);
-  const max_rows = Math.round((height - 300) / 27);
+  const max_rows = Math.round((height - 300) / 25);
   const snr = Math.round(max_rows / 2);
   const fnr = snr;
   const snc = Math.round(max_cols / 4);
