@@ -164,7 +164,7 @@ export default class PathfindingVisualizer extends Component {
 
   visuailzeBFSearch() {
     const { grid } = this.state;
-    document.getElementById('msg').innerHTML = "<b>Best_First Search</b> is faster version os A star's algorithm";
+    document.getElementById('msg').innerHTML = "<b>Best_First Search</b> is a faster version of A star's algorithm";
     document.getElementById('vb').setAttribute("disabled", "disabled");
     document.getElementById('rm').setAttribute("disabled", "disabled");
     const width = window.innerWidth,
