@@ -13,6 +13,7 @@ export default class PathfindingVisualizer extends Component {
       grid: [],
       mouseIsPressed: false,
       algorithm: 'Select Algorithm',
+      heuristic: 'Heuristic',
     };
   }
 
@@ -61,14 +62,15 @@ export default class PathfindingVisualizer extends Component {
     const snc = Math.round(max_cols / 4);
     const fnc = Math.round(snc * 3);
     const n = (max_cols * max_rows * 3) / 4;
+    var newGrid = this.state.grid;
     for (let i = 0; i < n; i++) {
       const r = randomIntFromInterval(0, max_rows - 1);
       const c = randomIntFromInterval(0, max_cols - 1);
       if (snc === c && snr === r) continue;
       if (fnc === c && fnr === r) continue;
-      const newGrid = this.getNewGridWithWallToggled(this.state.grid, r, c);
-      this.setState({ grid: newGrid });
+      newGrid = this.getNewGridWithWallToggled(newGrid, r, c);
     }
+    this.setState({ grid: newGrid });
   }
 
   getNewGridWithWallToggled(grid, row, col) {
@@ -82,8 +84,9 @@ export default class PathfindingVisualizer extends Component {
     return newGrid;
   }
 
-  animateVisited(visitedNodesInOrder, nodesInShortestPathOrder) {
+  animateVisited(visitedNodesInOrder, nodesInShortestPathOrder, time) {
     if (visitedNodesInOrder.length === 0) {
+      console.log("here");
       const message = document.getElementById('msg');
       message.style.color = "red";
       message.innerHTML = "<b>No path found Reset</b> grid and try again ";
@@ -92,7 +95,7 @@ export default class PathfindingVisualizer extends Component {
     for (let i = 1; i <= visitedNodesInOrder.length; i++) {
       if (i === visitedNodesInOrder.length) {
         setTimeout(() => {
-          this.animateShortestPath(nodesInShortestPathOrder);
+          this.animateShortestPath(nodesInShortestPathOrder, visitedNodesInOrder, time);
         }, 10 * i);
         return;
       }
@@ -103,7 +106,7 @@ export default class PathfindingVisualizer extends Component {
     }
   }
 
-  animateShortestPath(nodesInShortestPathOrder) {
+  animateShortestPath(nodesInShortestPathOrder, visitedNodesInOrder, time) {
     for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
       setTimeout(() => {
         const node = nodesInShortestPathOrder[i];
@@ -113,12 +116,13 @@ export default class PathfindingVisualizer extends Component {
       setTimeout(() => {
         const message = document.getElementById('msg');
         if (nodesInShortestPathOrder.length === 1) {
+          console.log("here2");
           message.style.color = "red";
           message.innerHTML = "<b>No path found Reset</b> grid and try again ";
           return;
         }
-        message.innerHTML = "Use <b>Reset grid</b> button and visualize again";
-      }, 100 * nodesInShortestPathOrder.length);
+        message.innerHTML = "Use <b>Reset grid</b> button and visualize again <b>(Visited nodes: " + visitedNodesInOrder.length + "___Path length: " + nodesInShortestPathOrder.length + "___Execution Time: " + time + "ms )</b>";
+      }, 50 * nodesInShortestPathOrder.length);
     }
   }
 
@@ -137,9 +141,13 @@ export default class PathfindingVisualizer extends Component {
     const fnc = Math.round(snc * 3);
     const startNode = grid[snr][snc];
     const finishNode = grid[fnr][fnc];
+    var start = new Date().getTime();
     const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
-    this.animateVisited(visitedNodesInOrder, nodesInShortestPathOrder);
+    var end = new Date().getTime();
+    var time = end - start;
+    //alert('Execution time: ' + time);
+    this.animateVisited(visitedNodesInOrder, nodesInShortestPathOrder, time);
   }
 
   visualizeAstar() {
@@ -157,9 +165,12 @@ export default class PathfindingVisualizer extends Component {
     const fnc = Math.round(snc * 3);
     const startNode = grid[snr][snc];
     const finishNode = grid[fnr][fnc];
-    const visitedNodesInOrder = astar(grid, startNode, finishNode);
+    var start = new Date().getTime();
+    const visitedNodesInOrder = astar(grid, startNode, finishNode, this.state.heuristic);
     const nodesInShortestPathOrder = getNodesInShortestPathOrderAstar(finishNode);
-    this.animateVisited(visitedNodesInOrder, nodesInShortestPathOrder);
+    var end = new Date().getTime();
+    var time = end - start;
+    this.animateVisited(visitedNodesInOrder, nodesInShortestPathOrder, time);
   }
 
   visuailzeBFSearch() {
@@ -177,12 +188,16 @@ export default class PathfindingVisualizer extends Component {
     const fnc = Math.round(snc * 3);
     const startNode = grid[snr][snc];
     const finishNode = grid[fnr][fnc];
-    const visitedNodesInOrder = bfsearch(grid, startNode, finishNode);
+    var start = new Date().getTime();
+    const visitedNodesInOrder = bfsearch(grid, startNode, finishNode, this.state.heuristic);
     const nodesInShortestPathOrder = getNodesInShortestPathOrderbfsearch(finishNode);
-    this.animateVisited(visitedNodesInOrder, nodesInShortestPathOrder);
+    var end = new Date().getTime();
+    var time = end - start;
+    this.animateVisited(visitedNodesInOrder, nodesInShortestPathOrder, time);
   }
 
   visualize() {
+    console.log(this.state.diagonal);
     const algo = this.state.algorithm;
     if (algo === 'Select Algorithm') {
       document.getElementById('msg').innerHTML = "<b>First select an algorithm</b>";
@@ -196,10 +211,9 @@ export default class PathfindingVisualizer extends Component {
     else if (algo === 'Best_First Search') {
       this.visuailzeBFSearch();
     }
-  }
-
-  setAlgorithm(str) {
-    this.setState({ algorithm: str });
+    else {
+      this.visualizeBDAstar();
+    }
   }
 
   render() {
@@ -212,9 +226,15 @@ export default class PathfindingVisualizer extends Component {
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="ml-auto">
               <NavDropdown title={this.state.algorithm}>
-                <NavDropdown.Item as="button" onClick={() => this.setAlgorithm('Dijkstra\'s Algorithm')}>Dijkstra's algorithm</NavDropdown.Item>
-                <NavDropdown.Item as="button" onClick={() => this.setAlgorithm('Astar\'s Algorithm')}>Astar's algorithm</NavDropdown.Item>
-                <NavDropdown.Item as="button" onClick={() => this.setAlgorithm('Best_First Search')}>Best_First Search</NavDropdown.Item>
+                <NavDropdown.Item as="button" onClick={() => this.setState({ algorithm: 'Dijkstra\'s Algorithm' })}>Dijkstra's algorithm</NavDropdown.Item>
+                <NavDropdown.Item as="button" onClick={() => this.setState({ algorithm: 'Astar\'s Algorithm' })}>Astar's search algorithm</NavDropdown.Item>
+                < NavDropdown.Item as="button" onClick={() => this.setState({ algorithm: 'Best_First Search' })}>Greedy Best first search</NavDropdown.Item>
+              </NavDropdown>
+              <NavDropdown title={this.state.heuristic}>
+                <NavDropdown.Item as="button" onClick={() => this.setState({ heuristic: 'Manhattan' })}>Manhattan</NavDropdown.Item>
+                <NavDropdown.Item as="button" onClick={() => this.setState({ heuristic: 'Euclidiean' })}>Euclidiean</NavDropdown.Item>
+                <NavDropdown.Item as="button" onClick={() => this.setState({ heuristic: 'Chebyshev' })}>Chebyshev</NavDropdown.Item>
+                <NavDropdown.Item as="button" onClick={() => this.setState({ heuristic: 'Octile' })}>Octile</NavDropdown.Item>
               </NavDropdown>
               <Button id="vb" onClick={() => this.visualize()} variant="dark">Visualize</Button>
               <Button id="rm" onClick={() => this.randomGrid()} variant="dark">Random maze</Button>
@@ -381,5 +401,3 @@ const createNode = (col, row) => {
     previousNode: null,
   };
 };
-
-

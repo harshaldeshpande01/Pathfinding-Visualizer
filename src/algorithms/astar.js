@@ -1,6 +1,17 @@
-export function astar(grid, startNode, finishNode) {
+export function astar(grid, startNode, finishNode, heuristic) {
     const visitedNodesInOrder = [];
-    startNode.distance = calculateEuclidien(startNode, finishNode);
+    if (heuristic === 'Manhattan' || heuristic === 'Heuristic') {
+        startNode.distance = calculateManhattan(startNode, finishNode);
+    }
+    else if (heuristic === 'Euclidien') {
+        startNode.distance = calculateEuclidien(startNode, finishNode);
+    }
+    else if (heuristic === 'Chebyshev') {
+        startNode.distance = calculateChebyshev(startNode, finishNode);
+    }
+    else {
+        startNode.distance = calculateOctile(startNode, finishNode);
+    }
     const unvisitedNodes = getAllNodes(grid);
     while (!!unvisitedNodes.length) {
         sortNodesByDistance(unvisitedNodes);
@@ -14,12 +25,19 @@ export function astar(grid, startNode, finishNode) {
         closestNode.isVisited = true;
         //visitedNodesInOrder.push(closestNode);
         if (closestNode === finishNode) return visitedNodesInOrder;
-        updateUnvisitedNeighbors(closestNode, grid, visitedNodesInOrder, startNode, finishNode);
+        updateUnvisitedNeighbors(closestNode, grid, visitedNodesInOrder, startNode, finishNode, heuristic);
     }
 }
 
 function sortNodesByDistance(unvisitedNodes) {
     unvisitedNodes.sort((nodeA, nodeB) => nodeA.distance - nodeB.distance);
+}
+
+function calculateManhattan(neighbor, finishNode) {
+    const x = Math.abs(finishNode.row - neighbor.row);
+    const y = Math.abs(finishNode.col - neighbor.col);
+    const retval = x + y;
+    return retval;
 }
 
 function calculateEuclidien(neighbor, finishNode) {
@@ -29,11 +47,37 @@ function calculateEuclidien(neighbor, finishNode) {
     return retval;
 }
 
-function updateUnvisitedNeighbors(node, grid, visitedNodesInOrder, startNode, finishNode) {
+function calculateChebyshev(neighbor, finishNode) {
+    const x = Math.abs(finishNode.row - neighbor.row);
+    const y = Math.abs(finishNode.col - neighbor.col);
+    const retval = x > y ? x : y;
+    return retval;
+}
+
+function calculateOctile(neighbor, finishNode) {
+    const x = Math.abs(finishNode.row - neighbor.row);
+    const y = Math.abs(finishNode.col - neighbor.col);
+    const a = 2 - Math.sqrt(2);
+    const retval = x > y ? a * x : a * y;
+    return retval;
+}
+
+function updateUnvisitedNeighbors(node, grid, visitedNodesInOrder, startNode, finishNode, heuristic) {
     const unvisitedNeighbors = getUnvisitedNeighbors(node, grid);
     for (const neighbor of unvisitedNeighbors) {
         if (!neighbor.isWall && !neighbor.isFinish) visitedNodesInOrder.push(neighbor);
-        neighbor.distance = calculateEuclidien(neighbor, finishNode) + calculateEuclidien(neighbor, startNode);
+        if (heuristic === "Manhattan" || heuristic === "Heuristic") {
+            neighbor.distance = calculateManhattan(neighbor, finishNode) + calculateManhattan(neighbor, startNode);
+        }
+        else if (heuristic === 'Euclidien') {
+            neighbor.distance = calculateEuclidien(neighbor, finishNode) + calculateEuclidien(neighbor, startNode);
+        }
+        else if (heuristic === 'Chebyshev') {
+            neighbor.distance = calculateChebyshev(neighbor, finishNode) + calculateChebyshev(neighbor, startNode);
+        }
+        else {
+            neighbor.distance = calculateOctile(neighbor, finishNode) + calculateOctile(neighbor, startNode);
+        }
         neighbor.previousNode = node;
     }
 }
