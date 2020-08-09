@@ -25,7 +25,7 @@ export default class PathfindingVisualizer extends Component {
     const width = window.innerWidth,
       height = window.innerHeight;
     const max_cols = Math.round((width - 100) / 20);
-    const max_rows = Math.round((height - 300) / 20);
+    var max_rows = Math.round((height - 300) / 20);
     const grid = [];
     for (let row = 0; row < max_rows; row++) {
       const currentRow = [];
@@ -35,6 +35,7 @@ export default class PathfindingVisualizer extends Component {
       grid.push(currentRow);
     }
     this.setState({ grid });
+    this.forceUpdate();
   }
 
   handleMouseDown(row, col) {
@@ -86,7 +87,6 @@ export default class PathfindingVisualizer extends Component {
 
   animateVisited(visitedNodesInOrder, nodesInShortestPathOrder, time) {
     if (visitedNodesInOrder.length === 0) {
-      console.log("here");
       const message = document.getElementById('msg');
       message.style.color = "red";
       message.innerHTML = "<b>No path found Reset</b> grid and try again ";
@@ -101,6 +101,15 @@ export default class PathfindingVisualizer extends Component {
       }
       setTimeout(() => {
         const node = visitedNodesInOrder[i];
+        // const newGrid = this.state.grid;
+        // const node = newGrid[row][col];
+        // const newNode = {
+        //   ...node,
+        //   isVisited: true,
+        // };
+        // newGrid[node.row][node.col] = newNode;
+        // this.setState({ grid: newGrid });
+        // return newGrid;
         if (i < visitedNodesInOrder.length - 1) document.getElementById(`node-${node.row}-${node.col}`).className = 'node node-visited';
       }, 10 * i);
     }
@@ -146,7 +155,6 @@ export default class PathfindingVisualizer extends Component {
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
     var end = new Date().getTime();
     var time = end - start;
-    //alert('Execution time: ' + time);
     this.animateVisited(visitedNodesInOrder, nodesInShortestPathOrder, time);
   }
 
@@ -175,7 +183,7 @@ export default class PathfindingVisualizer extends Component {
 
   visuailzeBFSearch() {
     const { grid } = this.state;
-    document.getElementById('msg').innerHTML = "<b>Best_First Search</b> is a faster version of A star's algorithm";
+    document.getElementById('msg').innerHTML = "<b>Best_First Search</b>";
     document.getElementById('vb').setAttribute("disabled", "disabled");
     document.getElementById('rm').setAttribute("disabled", "disabled");
     const width = window.innerWidth,
@@ -197,7 +205,6 @@ export default class PathfindingVisualizer extends Component {
   }
 
   visualize() {
-    console.log(this.state.diagonal);
     const algo = this.state.algorithm;
     if (algo === 'Select Algorithm') {
       document.getElementById('msg').innerHTML = "<b>First select an algorithm</b>";
@@ -238,6 +245,7 @@ export default class PathfindingVisualizer extends Component {
               </NavDropdown>
               <Button id="vb" onClick={() => this.visualize()} variant="dark">Visualize</Button>
               <Button id="rm" onClick={() => this.randomGrid()} variant="dark">Random maze</Button>
+              {/* <Button id="trial" onClick={() => this.getInitialGrid()} variant="dark">Clear Animations</Button> */}
               <Button id="rg" onClick={() => window.location.reload(false)} variant="dark">Reset Grid</Button>
             </Nav>
           </Navbar.Collapse>
