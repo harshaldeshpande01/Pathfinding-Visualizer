@@ -35,7 +35,7 @@ export default class PathfindingVisualizer extends Component {
       grid.push(currentRow);
     }
     this.setState({ grid });
-    this.forceUpdate();
+    // this.forceUpdate();
   }
 
   handleMouseDown(row, col) {
